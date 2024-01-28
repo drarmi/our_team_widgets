@@ -2,12 +2,12 @@
 
 namespace OUR_TEAM\Inc\Widgets;
 
-class Our_Team extends \Elementor\Widget_Base
+class Our_Team_Carousel_Widget extends \Elementor\Widget_Base
 {
 
 	public function get_name()
 	{
-		return  'our-team-widget-id';
+		return 'our-team-custom-widget';
 	}
 
 	public function get_title()
@@ -37,11 +37,11 @@ class Our_Team extends \Elementor\Widget_Base
 
 	public function _register_controls()
 	{
-		// Main Settings
+		// Settings
 		$this->start_controls_section(
-			'our_team_settings',
+			'slider_settings',
 			[
-				'label' => esc_html__('Settings', 'our_team'),
+				'label' => __('Settings', 'our_team'),
 				'tab' => \Elementor\Controls_Manager::TAB_CONTENT,
 			]
 		);
@@ -55,6 +55,9 @@ class Our_Team extends \Elementor\Widget_Base
 				'max' => 100,
 				'step' => 1,
 				'default' => 1,
+				'condition' => [
+					'show_carrousel' => 'yes'
+				]
 			]
 		);
 
@@ -67,6 +70,9 @@ class Our_Team extends \Elementor\Widget_Base
 				'max' => 100,
 				'step' => 1,
 				'default' => 2,
+				'condition' => [
+					'show_carrousel' => 'yes'
+				]
 			]
 		);
 
@@ -79,6 +85,9 @@ class Our_Team extends \Elementor\Widget_Base
 				'max' => 100,
 				'step' => 1,
 				'default' => 3,
+				'condition' => [
+					'show_carrousel' => 'yes'
+				]
 			]
 		);
 
@@ -93,24 +102,21 @@ class Our_Team extends \Elementor\Widget_Base
 				'default' => 'yes',
 			]
 		);
+
 		$this->end_controls_section();
-
-
-
-
 
 
 		// Content Settings
 		$this->start_controls_section(
 			'content_settings',
 			[
-				'label' => esc_html__('Content Settings', 'our_team'),
+				'label' => __('Content Settings', 'our_team'),
 				'tab' => \Elementor\Controls_Manager::TAB_CONTENT,
 			]
 		);
+
 		// Slider Repeater
 		$repeater = new \Elementor\Repeater();
-
 		$repeater->add_control(
 			'slider_image',
 			[
@@ -136,7 +142,8 @@ class Our_Team extends \Elementor\Widget_Base
 			'slider_description',
 			[
 				'label' => esc_html__('About', 'our_team'),
-				'type' => \Elementor\Controls_Manager::WYSIWYG,
+				'type' => \Elementor\Controls_Manager::TEXTAREA,
+				'rows' => 10,
 				'default' => esc_html__('Enter the person information here', 'our_team'),
 				'placeholder' => esc_html__('Enter the person information here', 'our_team'),
 			]
@@ -146,7 +153,7 @@ class Our_Team extends \Elementor\Widget_Base
 		$repeater->add_control(
 			'show_bottom_our_team',
 			[
-				'label' => esc_html__('Show Bottom', 'plugin-domain'),
+				'label' => esc_html__('Show Bottom', 'our_team'),
 				'type' => \Elementor\Controls_Manager::SWITCHER,
 				'label_on' => esc_html__('Show', 'our_team'),
 				'label_off' => esc_html__('Hide', 'our_team'),
@@ -157,9 +164,9 @@ class Our_Team extends \Elementor\Widget_Base
 		$repeater->add_control(
 			'slider_link',
 			[
-				'label' => esc_html__('Button Link', 'elementor-list-widget'),
+				'label' => esc_html__('Button Link', 'our_team'),
 				'type' => \Elementor\Controls_Manager::URL,
-				'placeholder' => esc_html__('https://your-link.com', 'elementor-list-widget'),
+				'placeholder' => esc_html__('https://your-link.com', 'our_team'),
 				'dynamic' => [
 					'active' => true,
 				],
@@ -172,10 +179,10 @@ class Our_Team extends \Elementor\Widget_Base
 		$repeater->add_control(
 			'slider_link_text',
 			[
-				'label' => esc_html__('Bottom Text', 'plugin-domain'),
+				'label' => esc_html__('Bottom Text', 'our_team'),
 				'type' => \Elementor\Controls_Manager::TEXT,
-				'default' => esc_html__('Read more', 'plugin-domain'),
-				'placeholder' => esc_html__('Type your text here', 'plugin-domain'),
+				'default' => esc_html__('Read more', 'our_team'),
+				'placeholder' => esc_html__('Type your text here', 'our_team'),
 				'condition' => [
 					'show_bottom_our_team' => 'yes'
 				]
@@ -206,15 +213,19 @@ class Our_Team extends \Elementor\Widget_Base
 	protected function render()
 	{
 		$settings = $this->get_settings_for_display();
+
 		$this->add_render_attribute(
-			'logo_carousel_options',
+			'carousel_options',
 			[
 				'id'          => 'logo-carousel-' . $this->get_id(),
-
+				'data-show-carrousel'   => $settings['show_carrousel'],
+				'data-leptop-column'   => $settings['leptop_column'],
+				'data-pc-column'       => $settings['pc_column'],
+				'data-mobile-column'   => $settings['mobile_column'],
 			]
 		);
 ?>
-		<div class="slick-carousel">
+		<div class="owl-carousel owl-theme logo-carousel" <?php echo $this->get_render_attribute_string('carousel_options'); ?>>
 			<?php foreach ($settings['slider'] as $slide) : ?>
 				<div class="item">
 					<div>
@@ -229,7 +240,6 @@ class Our_Team extends \Elementor\Widget_Base
 					<?php if ($slide['show_bottom_our_team'] === 'yes') { ?>
 						<a href="<?php echo esc_url($slide['slider_link']['url']) ?>"><?php echo esc_html($slide['slider_link_text']) ?></a>
 					<?php } ?>
-
 				</div>
 			<?php endforeach; ?>
 		</div>
@@ -239,22 +249,23 @@ class Our_Team extends \Elementor\Widget_Base
 	protected function _content_template()
 	{
 	?>
-		<# if( settings.slider.length ) { #>
-			<div class="slick-carousel">
-				<# _.each( settings.slider, function( slide ) { #>
-					<div class="item">
-						<div>
-							<img src="{{ slide.slider_image.url }}" alt="{{ slide.slider_title }}" />
+		<# view.addRenderAttribute( 'carousel_options' , { 'id' : 'logo-carousel-id' , 'data-show-carrousel' : settings.show_carrousel, 'data-pc-column' : settings.pc_column, 'data-leptop-column' : settings.leptop_column, 'data-mobile-column' : settings.mobile_column, } ); #>
+			<# if( settings.slider.length ) { #>
+				<div class="owl-carousel owl-theme logo-carousel" {{{ view.getRenderAttributeString( 'carousel_options' ) }}}>
+					<# _.each( settings.slider, function( slide ) { #>
+						<div class="item">
+							<div>
+								<img src="{{ slide.slider_image.url }}" alt="{{ slide.slider_title }}" />
+							</div>
+							<h3>{{slide.slider_title}}</h3>
+							<div>{{slide.slider_description}}</div>
+							<# if( slide.show_bottom_our_team=='yes' ) { #>
+								<a href="{{slide.slider_link.url}}">{{slide.slider_link_text}}</a>
+								<# } #>
 						</div>
-						<h3>{{slide.slider_title}}</h3>
-						<div>{{slide.slider_description}}</div>
-						<# if( slide.show_bottom_our_team=='yes' ) { #>
-							<a href="{{slide.slider_link.url}}">{{slide.slider_link_text}}</a>
-						<# } #>
-					</div>
-					<# } ) #>
-			</div>
-			<# } #>
-		<?php
+						<# } ) #>
+				</div>
+				<# } #>
+			<?php
+		}
 	}
-}

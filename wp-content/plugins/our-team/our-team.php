@@ -15,5 +15,33 @@
  */
 
 if (!defined('ABSPATH')) {
-	exit; // Exit if accessed directly.
+	exit;
 }
+
+if (!defined('OUR_TEAM_DIR_PATH')) {
+	define('OUR_TEAM_DIR_PATH', plugin_dir_path(__FILE__));
+}
+
+if (!defined('OUR_TEAM_DIR_URI')) {
+	define('OUR_TEAM_DIR_URI', untrailingslashit(plugins_url('/', __FILE__)));
+}
+if (!defined('OUR_TEAM_VERSION')) {
+	define('OUR_TEAM_VERSION', '1.0.0');
+}
+
+if (!defined('OUR_TEAM_MINIMUM_ELEMENTOR_VERSION')) {
+	define('OUR_TEAM_MINIMUM_ELEMENTOR_VERSION', '2.0.0');
+}
+
+if (!defined('OUR_TEAM_MINIMUM_PHP_VERSION')) {
+	define('OUR_TEAM_MINIMUM_PHP_VERSION', '7.0');
+}
+
+require_once OUR_TEAM_DIR_PATH . '/inc/helpers/autoloader.php';
+
+function our_team_plugin_get_instance()
+{
+	\OUR_TEAM\Inc\My_Custom_Elementor_Widget::get_instance();
+}
+
+our_team_plugin_get_instance();
