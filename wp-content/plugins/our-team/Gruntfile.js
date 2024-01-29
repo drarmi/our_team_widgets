@@ -56,7 +56,7 @@ module.exports = function (grunt) {
 			target: {
 				options: {
 					domainPath: '/languages/',
-					potFilename: 'my-elementor-widget',
+					potFilename: 'our_team',
 					type: 'wp-plugin',
 				}
 			}
@@ -102,20 +102,20 @@ module.exports = function (grunt) {
 			main: {
 				options: {
 					mode: 'zip',
-					archive: './build/my-elementor-widget-v-' + pkg.version + '.zip',
+					archive: './build/our_team-v-' + pkg.version + '.zip',
 				},
 				expand: true,
 				cwd: 'build/',
 				src: ['**/*'],
-				dest: 'my-elementor-widget'
+				dest: 'our_team'
 			}
 		},
 
 		// Generate Text Domain
 		addtextdomain: {
 			options: {
-				textdomain: 'my-elementor-widget',
-				updateDomains: ['my-elementor-widget']
+				textdomain: 'our_team',
+				updateDomains: ['our_team']
 			},
 			target: {
 				files: {
